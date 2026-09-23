@@ -12,7 +12,7 @@
 | # | Name | Student ID | GitHub Username | Main Responsibility |
 |---|---|---|---|---|
 | 1 | `วีรภัทร พิริยะสถิต` | `670710653` | `@670710653` | Concept + Code |
-| 2 | `อาธารดา พรหมแทนสุด` | `670710654` | `@[username]` | Code + Demo |
+| 2 | `อาธารดา พรหมแทนสุด` | `670710654` | `@670710654` | Code + Demo |
 | 3 | `[ชื่อ-นามสกุล]` | `[รหัส]` | `@[username]` | Rust vs Other Language + PPL |
 | 4 | `[ชื่อ-นามสกุล]` | `[รหัส]` | `@[username]` | Exercises + Common Mistakes |
 
