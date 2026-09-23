@@ -1,9 +1,9 @@
 # Rust Tutorial Project — Principles of Programming Languages
 
 > **สำหรับนักศึกษา:** ใช้ไฟล์นี้เป็น Template สำหรับจัดทำบทเรียน Rust ของกลุ่ม  
-> **Topic No.:** `XX`  
-> **Topic Name:** `[ชื่อหัวข้อ]`  
-> **Group No.:** `XX`
+> **Topic No.:** `21`  
+> **Topic Name:** `Smart Pointer & Resource Management`  
+> **Group No.:** `21`
 
 ---
 
