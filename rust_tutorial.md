@@ -158,25 +158,55 @@ fn main() {
 
 > **ข้อกำหนด:** Code ทุกตัวต้อง Compile และ Run ได้จริงก่อนนำมาใส่ในเอกสาร
 
-### Example 1 — `[ชื่อ Example]`
+### Example 1 — `Box<T>`
 
 **Purpose:** `[ต้องการสาธิตอะไร]`
 
 ```rust
+#[derive(Debug)]
+enum List {
+    Cons(i32, Box<List>),
+    Nil,
+}
+
+use List::{Cons, Nil};
+
+fn sum_list(list: &List) -> i32 {
+    match list {
+        Cons(value, next) => value + sum_list(next),
+        Nil => 0,
+    }
+}
+
 fn main() {
-    // Write your runnable Rust code here
+    // สร้าง linked list: 1 -> 2 -> 3 -> Nil
+    let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
+
+    println!("List: {:?}", list);
+    println!("Sum of list = {}", sum_list(&list));
+
+    // ตัวอย่างง่าย ๆ อีกแบบ: เก็บค่าธรรมดาไว้บน heap
+    let boxed_number = Box::new(42);
+    println!("Boxed number = {}", boxed_number);
+    // boxed_number จะถูก deallocate อัตโนมัติเมื่อออกจาก scope (Drop)
 }
 ```
 
 **Expected Output**
 
 ```text
-[expected output]
+List: Cons(1, Cons(2, Cons(3, Nil)))
+Sum of list = 6
+Boxed number = 42
 ```
 
 **Explanation**
 
-`[อธิบาย code ทีละส่วนที่สำคัญ]`
+`
+*enum List { Cons(i32, Box<List>), Nil } — ถ้าไม่มี Box ตรงนี้ Rust จะ error ทันที เพราะ List จะมีขนาดไม่จำกัด (แต่ละ Cons มี List อีกตัวซ้อนอยู่ข้างใน ไม่รู้จบ) การใส่ Box<List> ทำให้ Rust รู้ขนาดที่แน่นอน เพราะ Box คือ pointer ที่มีขนาดคงที่ (ชี้ไปยัง heap)
+*sum_list() recursive function เดินไล่ตาม pointer ไปเรื่อย ๆ จนเจอ Nil
+*Box::new(42) คือตัวอย่างง่าย ๆ ของการย้ายค่าไปเก็บบน heap แล้วเมื่อ boxed_number หมด scope มันจะถูก deallocate อัตโนมัติ (ผ่าน Drop ที่ Rust ทำให้ built-in)
+`
 
 ---
 
