@@ -179,16 +179,13 @@ fn sum_list(list: &List) -> i32 {
 }
 
 fn main() {
-    // สร้าง linked list: 1 -> 2 -> 3 -> Nil
     let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
 
     println!("List: {:?}", list);
     println!("Sum of list = {}", sum_list(&list));
 
-    // ตัวอย่างง่าย ๆ อีกแบบ: เก็บค่าธรรมดาไว้บน heap
     let boxed_number = Box::new(42);
     println!("Boxed number = {}", boxed_number);
-    // boxed_number จะถูก deallocate อัตโนมัติเมื่อออกจาก scope (Drop)
 }
 ```
 
@@ -230,7 +227,6 @@ fn main() {
 
     println!("Reference count after creation = {}", Rc::strong_count(&owner));
 
-    // clone() ที่นี่ไม่ได้ copy ข้อมูลจริง แค่เพิ่มตัวนับ (increment counter)
     let owner_clone1 = Rc::clone(&owner);
     println!("Reference count after clone1 = {}", Rc::strong_count(&owner));
 
@@ -238,7 +234,7 @@ fn main() {
         let owner_clone2 = Rc::clone(&owner);
         println!("Reference count after clone2 = {}", Rc::strong_count(&owner));
         println!("owner_clone2 points to: {:?}", owner_clone2);
-    } // owner_clone2 หมด scope ตรงนี้ ตัวนับจะลดลง
+    }
 
     println!("Reference count after clone2 dropped = {}", Rc::strong_count(&owner));
     println!("owner = {:?}, owner_clone1 = {:?}", owner, owner_clone1);
