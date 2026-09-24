@@ -202,32 +202,68 @@ Boxed number = 42
 
 **Explanation**
 
-`*enum List { Cons(i32, Box<List>), Nil } — ถ้าไม่มี Box ตรงนี้ Rust จะ error ทันที เพราะ List จะมีขนาดไม่จำกัด (แต่ละ Cons มี List อีกตัวซ้อนอยู่ข้างใน ไม่รู้จบ) การใส่ Box<List> ทำให้ Rust รู้ขนาดที่แน่นอน เพราะ Box คือ pointer ที่มีขนาดคงที่ (ชี้ไปยัง heap)`
-`*sum_list() recursive function เดินไล่ตาม pointer ไปเรื่อย ๆ จนเจอ Nil`
-`*Box::new(42) คือตัวอย่างง่าย ๆ ของการย้ายค่าไปเก็บบน heap แล้วเมื่อ boxed_number หมด scope มันจะถูก deallocate อัตโนมัติ (ผ่าน Drop ที่ Rust ทำให้ built-in)`
+<ul>
+    <li>enum List { Cons(i32, Box<List>), Nil } — ถ้าไม่มี Box ตรงนี้ Rust จะ error ทันที เพราะ List จะมีขนาดไม่จำกัด (แต่ละ Cons มี List อีกตัวซ้อนอยู่ข้างใน ไม่รู้จบ) การใส่ Box<List> ทำให้ Rust รู้ขนาดที่แน่นอน เพราะ Box คือ pointer ที่มีขนาดคงที่ (ชี้ไปยัง heap)</li>
+    <li>sum_list() recursive function เดินไล่ตาม pointer ไปเรื่อย ๆ จนเจอ Nil</li>
+    <li>Box::new(42) คือตัวอย่างง่าย ๆ ของการย้ายค่าไปเก็บบน heap แล้วเมื่อ boxed_number หมด scope มันจะถูก deallocate อัตโนมัติ (ผ่าน Drop ที่ Rust ทำให้ built-in)</li>
+</ul>
 
 
 ---
 
-### Example 2 — `[ชื่อ Example]`
+### Example 2 — `Rc<T>`
 
-**Purpose:** `[ต้องการสาธิตอะไร]`
+**Purpose:** `แชร์ข้อมูลเดียวกันระหว่างหลาย "เจ้าของ" (multiple owners) แบบ single-thread โดยนับจำนวนผู้ถืออ้างอิง (reference counting)`
 
 ```rust
+use std::rc::Rc;
+
+#[derive(Debug)]
+struct Owner {
+    name: String,
+}
+
 fn main() {
-    // Write your runnable Rust code here
+    let owner = Rc::new(Owner {
+        name: String::from("Shared Resource"),
+    });
+
+    println!("Reference count after creation = {}", Rc::strong_count(&owner));
+
+    // clone() ที่นี่ไม่ได้ copy ข้อมูลจริง แค่เพิ่มตัวนับ (increment counter)
+    let owner_clone1 = Rc::clone(&owner);
+    println!("Reference count after clone1 = {}", Rc::strong_count(&owner));
+
+    {
+        let owner_clone2 = Rc::clone(&owner);
+        println!("Reference count after clone2 = {}", Rc::strong_count(&owner));
+        println!("owner_clone2 points to: {:?}", owner_clone2);
+    } // owner_clone2 หมด scope ตรงนี้ ตัวนับจะลดลง
+
+    println!("Reference count after clone2 dropped = {}", Rc::strong_count(&owner));
+    println!("owner = {:?}, owner_clone1 = {:?}", owner, owner_clone1);
 }
 ```
 
 **Expected Output**
 
 ```text
-[expected output]
+Reference count after creation = 1
+Reference count after clone1 = 2
+Reference count after clone2 = 3
+owner_clone2 points to: Owner { name: "Shared Resource" }
+Reference count after clone2 dropped = 2
+owner = Owner { name: "Shared Resource" }, owner_clone1 = Owner { name: "Shared Resource" }
 ```
 
 **Explanation**
 
-`[อธิบาย code]`
+<ul>
+    <li>Rc::new(...) สร้างข้อมูลบน heap พร้อม counter เริ่มต้นที่ 1</li>
+    <li>Rc::clone(&owner) ไม่ได้ copy ข้อมูลจริง แค่เพิ่มตัวเลขนับ (strong count) — นี่คือจุดต่างสำคัญจาก .clone() ของ type ทั่วไป</li>
+    <li>เมื่อ owner_clone2 หลุด scope (ปิด {}) ตัวนับลดลงอัตโนมัติ เพราะ Rc implement Drop ไว้ให้แล้ว</li>
+    <li>ข้อมูลจริงจะถูกลบก็ต่อเมื่อ ตัวนับกลับมาเป็น 0 เท่านั้น (คือเมื่อ owner ทุกตัวหมด scope)</li>
+</ul>
 
 ---
 
@@ -441,7 +477,7 @@ fn main() {
 
 | AI Tool | Purpose | How the Result Was Verified |
 |---|---|---|
-| `[เช่น ChatGPT]` | `[ใช้เพื่ออะไร]` | `[ตรวจสอบอย่างไร]` |
+| `Claude` | `ออกแบบโค้ดตัวอย่าง` | `ตรวจสอบโดยการนำมา run ผ่านโปรแกรมและเว็บไซต์ Rust Playground` |
 | `[AI tool]` | `[ใช้เพื่ออะไร]` | `[ตรวจสอบอย่างไร]` |
 
 ### Declaration
