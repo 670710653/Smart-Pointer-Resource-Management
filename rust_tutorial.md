@@ -202,8 +202,10 @@ Boxed number = 42
 
 **Explanation**
 
-`<ul><li>enum List { Cons(i32, Box<List>), Nil } — ถ้าไม่มี Box ตรงนี้ Rust จะ error ทันที เพราะ List จะมีขนาดไม่จำกัด (แต่ละ Cons มี List อีกตัวซ้อนอยู่ข้างใน ไม่รู้จบ) การใส่ Box<List> ทำให้ Rust รู้ขนาดที่แน่นอน เพราะ Box คือ pointer ที่มีขนาดคงที่ (ชี้ไปยัง heap)</li><li>sum_list() recursive function เดินไล่ตาม pointer ไปเรื่อย ๆ จนเจอ Nil</li><li>Box::new(42) คือตัวอย่างง่าย ๆ ของการย้ายค่าไปเก็บบน heap แล้วเมื่อ boxed_number หมด scope มันจะถูก deallocate อัตโนมัติ (ผ่าน Drop ที่ Rust ทำให้ built-in)</li></ul>
-`
+`*enum List { Cons(i32, Box<List>), Nil } — ถ้าไม่มี Box ตรงนี้ Rust จะ error ทันที เพราะ List จะมีขนาดไม่จำกัด (แต่ละ Cons มี List อีกตัวซ้อนอยู่ข้างใน ไม่รู้จบ) การใส่ Box<List> ทำให้ Rust รู้ขนาดที่แน่นอน เพราะ Box คือ pointer ที่มีขนาดคงที่ (ชี้ไปยัง heap)`
+`*sum_list() recursive function เดินไล่ตาม pointer ไปเรื่อย ๆ จนเจอ Nil`
+`*Box::new(42) คือตัวอย่างง่าย ๆ ของการย้ายค่าไปเก็บบน heap แล้วเมื่อ boxed_number หมด scope มันจะถูก deallocate อัตโนมัติ (ผ่าน Drop ที่ Rust ทำให้ built-in)`
+
 
 ---
 
