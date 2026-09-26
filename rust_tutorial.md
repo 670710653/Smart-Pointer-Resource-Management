@@ -233,7 +233,7 @@ Final value: 75
 
 ### Example 1 — `Box<T>`
 
-**Purpose:** `เก็บข้อมูลบน Heap แทน Stack และแก้ปัญหา recursive type ที่ compiler ไม่รู้ขนาดล่วงหน้า (เช่น Linked List)`
+**Purpose:** `เพื่อสาธิตการใช้ Box<T> ในการจัดเก็บข้อมูลไว้บน Heap แทน Stack และแสดงวิธีใช้ Box<T> ในการสร้าง Recursive Data Structure (โครงสร้างข้อมูลที่เรียกใช้ตัวเอง) เช่น Linked List ซึ่ง Rust บน Stack ไม่สามารถคำนวณขนาด (Size) ในช่วง Compile time ได้หากไม่ใช้ Smart Pointer`
 
 ```rust
 #[derive(Debug)]
@@ -280,7 +280,7 @@ Boxed number = 42
 
 ### Example 2 — `Rc<T>`
 
-**Purpose:** `แชร์ข้อมูลเดียวกันระหว่างหลาย "เจ้าของ" (multiple owners) แบบ single-thread โดยนับจำนวนผู้ถืออ้างอิง (reference counting)`
+**Purpose:** `เพื่อสาธิตปัญหาของ Ownership ปกติที่ยอมให้มีเจ้าของได้เพียง คนเดียว และแสดงวิธีใช้ Rc<T> (Reference Counted) เพื่อเปิดให้ข้อมูลบน Heap สามารถมีเจ้าของได้ หลายคนพร้อมกัน (Multiple Ownership) สำหรับสถานการณ์ที่อ่านข้อมูลอย่างเดียว (Read-only)`
 
 ```rust
 use std::rc::Rc;
@@ -331,7 +331,7 @@ owner = Owner { name: "Shared Resource" }, owner_clone1 = Owner { name: "Shared 
 
 ### Example 3 — `Rc<RefCell<T>>`
 
-**Purpose:** `ให้หลายเจ้าของแก้ไขข้อมูลร่วมกันได้ (interior mutability) ซึ่ง Rc เพียงอย่างเดียวทำไม่ได้เพราะมันให้แค่ immutable access`
+**Purpose:** `เพื่อสาธิตการก้าวข้ามกฎ Borrow Checker ที่ปกติห้ามแก้ไขข้อมูลหากใช้ Immutable Reference โดยใช้ Interior Mutability Pattern ผ่าน RefCell<T> ซึ่งจะย้ายการตรวจกฎ Borrowing Rules จากช่วง Compile time ไปตรวจช่วง Runtime แทน`
 
 ```rust
 use std::cell::RefCell;
