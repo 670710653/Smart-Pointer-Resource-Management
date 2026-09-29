@@ -233,7 +233,7 @@ Final value: 75
 
 ### Example 1 — `Box<T>`
 
-**Purpose:** `เก็บข้อมูลบน Heap แทน Stack และแก้ปัญหา recursive type ที่ compiler ไม่รู้ขนาดล่วงหน้า (เช่น Linked List)`
+**Purpose:** `เพื่อสาธิตการใช้ Box<T> ในการจัดเก็บข้อมูลไว้บน Heap แทน Stack และแสดงวิธีใช้ Box<T> ในการสร้าง Recursive Data Structure (โครงสร้างข้อมูลที่เรียกใช้ตัวเอง) เช่น Linked List ซึ่ง Rust บน Stack ไม่สามารถคำนวณขนาด (Size) ในช่วง Compile time ได้หากไม่ใช้ Smart Pointer`
 
 ```rust
 #[derive(Debug)]
@@ -272,18 +272,15 @@ Boxed number = 42
 
 **Explanation**
 
-<ul>
-    <li>enum List { Cons(i32, Box<List>), Nil } — ถ้าไม่มี Box ตรงนี้ Rust จะ error ทันที เพราะ List จะมีขนาดไม่จำกัด (แต่ละ Cons มี List อีกตัวซ้อนอยู่ข้างใน ไม่รู้จบ) การใส่ Box<List> ทำให้ Rust รู้ขนาดที่แน่นอน เพราะ Box คือ pointer ที่มีขนาดคงที่ (ชี้ไปยัง heap)</li>
-    <li>sum_list() recursive function เดินไล่ตาม pointer ไปเรื่อย ๆ จนเจอ Nil</li>
-    <li>Box::new(42) คือตัวอย่างง่าย ๆ ของการย้ายค่าไปเก็บบน heap แล้วเมื่อ boxed_number หมด scope มันจะถูก deallocate อัตโนมัติ (ผ่าน Drop ที่ Rust ทำให้ built-in)</li>
-</ul>
-
+- enum List { Cons(i32, Box<List>), Nil } — ถ้าไม่มี Box ตรงนี้ Rust จะ error ทันที เพราะ List จะมีขนาดไม่จำกัด (แต่ละ Cons มี List อีกตัวซ้อนอยู่ข้างใน ไม่รู้จบ) การใส่ Box<List> ทำให้ Rust รู้ขนาดที่แน่นอน เพราะ Box คือ pointer ที่มีขนาดคงที่ (ชี้ไปยัง heap)
+- sum_list() recursive function เดินไล่ตาม pointer ไปเรื่อย ๆ จนเจอ Nil
+- Box::new(42) คือตัวอย่างง่าย ๆ ของการย้ายค่าไปเก็บบน heap แล้วเมื่อ boxed_number หมด scope มันจะถูก deallocate อัตโนมัติ (ผ่าน Drop ที่ Rust ทำให้ built-in)
 
 ---
 
 ### Example 2 — `Rc<T>`
 
-**Purpose:** `แชร์ข้อมูลเดียวกันระหว่างหลาย "เจ้าของ" (multiple owners) แบบ single-thread โดยนับจำนวนผู้ถืออ้างอิง (reference counting)`
+**Purpose:** `เพื่อสาธิตปัญหาของ Ownership ปกติที่ยอมให้มีเจ้าของได้เพียง คนเดียว และแสดงวิธีใช้ Rc<T> (Reference Counted) เพื่อเปิดให้ข้อมูลบน Heap สามารถมีเจ้าของได้ หลายคนพร้อมกัน (Multiple Ownership) สำหรับสถานการณ์ที่อ่านข้อมูลอย่างเดียว (Read-only)`
 
 ```rust
 use std::rc::Rc;
@@ -327,12 +324,50 @@ owner = Owner { name: "Shared Resource" }, owner_clone1 = Owner { name: "Shared 
 
 **Explanation**
 
-<ul>
-    <li>Rc::new(...) สร้างข้อมูลบน heap พร้อม counter เริ่มต้นที่ 1</li>
-    <li>Rc::clone(&owner) ไม่ได้ copy ข้อมูลจริง แค่เพิ่มตัวเลขนับ (strong count) — นี่คือจุดต่างสำคัญจาก .clone() ของ type ทั่วไป</li>
-    <li>เมื่อ owner_clone2 หลุด scope (ปิด {}) ตัวนับลดลงอัตโนมัติ เพราะ Rc implement Drop ไว้ให้แล้ว</li>
-    <li>ข้อมูลจริงจะถูกลบก็ต่อเมื่อ ตัวนับกลับมาเป็น 0 เท่านั้น (คือเมื่อ owner ทุกตัวหมด scope)</li>
-</ul>
+- Rc::new(...) สร้างข้อมูลบน heap พร้อม counter เริ่มต้นที่ 1
+- Rc::clone(&owner) ไม่ได้ copy ข้อมูลจริง แค่เพิ่มตัวเลขนับ (strong count) — นี่คือจุดต่างสำคัญจาก .clone() ของ type ทั่วไป
+- เมื่อ owner_clone2 หลุด scope (ปิด {}) ตัวนับลดลงอัตโนมัติ เพราะ Rc implement Drop ไว้ให้แล้ว
+- ข้อมูลจริงจะถูกลบก็ต่อเมื่อ ตัวนับกลับมาเป็น 0 เท่านั้น (คือเมื่อ owner ทุกตัวหมด scope)
+
+### Example 3 — `Rc<RefCell<T>>`
+
+**Purpose:** `เพื่อสาธิตการก้าวข้ามกฎ Borrow Checker ที่ปกติห้ามแก้ไขข้อมูลหากใช้ Immutable Reference โดยใช้ Interior Mutability Pattern ผ่าน RefCell<T> ซึ่งจะย้ายการตรวจกฎ Borrowing Rules จากช่วง Compile time ไปตรวจช่วง Runtime แทน`
+
+```rust
+use std::cell::RefCell;
+use std::rc::Rc;
+
+#[derive(Debug)]
+struct Counter {
+    value: i32,
+}
+
+fn increment(shared_counter: &Rc<RefCell<Counter>>) {
+    let mut counter = shared_counter.borrow_mut();
+    counter.value += 1;
+}
+
+fn main() {
+    let shared_counter = Rc::new(RefCell::new(Counter { value: 0 }));
+
+    let counter_a = Rc::clone(&shared_counter);
+    let counter_b = Rc::clone(&shared_counter);
+
+    increment(&counter_a);
+    increment(&counter_b);
+    increment(&shared_counter);
+
+    println!("Final value = {}", shared_counter.borrow().value);
+    println!("Total owners (strong_count) = {}", Rc::strong_count(&shared_counter));
+}
+```
+
+**Explanation**
+
+- Rc<RefCell<Counter>> คือการรวมร่างสองตัว: Rc จัดการเรื่อง "แชร์เจ้าของ", RefCell จัดการเรื่อง "แก้ไขค่าได้แม้ตัวแปรจะดู immutable"
+- borrow_mut() คือการขอยืมแบบแก้ไขได้ โดย Rust จะเช็คกฎการยืม (borrowing rules) ตอน runtime แทน compile time — ถ้ามีการ borrow ซ้อนกันผิดกฎ (เช่น borrow_mut สองครั้งพร้อมกัน) โปรแกรมจะ panic ทันที`
+- ฟังก์ชัน increment รับ &Rc<RefCell<Counter>> แล้วแก้ค่าข้างในได้ แม้จะไม่ได้เป็นเจ้าของโดยตรง`
+- ผลลัพธ์สุดท้าย value = 3 เพราะเรียก increment ผ่าน 3 handle ที่ต่างชี้ไปข้อมูลเดียวกัน
 
 ---
 
