@@ -583,6 +583,7 @@ fn main() {
 |---|---|---|
 | `Claude` | `ออกแบบโค้ดตัวอย่าง` | `ตรวจสอบโดยการนำมา run ผ่านโปรแกรมและเว็บไซต์ Rust Playground` |
 | `Gemini` | `ตรวจเช็คเนื้อหาในสิ่งที่ผู้จัดทำเขียน` | `ผู้จัดทำไปทำการตรวจสอบข้อมูลที่AIนำมาใช้ตรวจผู้จัดทำว่าตรงตามเอกสารจากแหล่งอ้างอิงหรือไม่ด้วยตนเอง` |
+| `Copilot` | `ช่วยpush file` | `มันทำงานไม่ถูกต้องเลยไม่ได้ใช้ต่อ` |
 
 ### Declaration
 
@@ -646,9 +647,9 @@ fn main() {
 
 ## Submission Information
 
-**Repository:** `[GitHub repository URL]`
+**Repository:** `https://github.com/670710653/Smart-Pointer-Resource-Management`
 
-**Chapter Path:** `[เช่น chapters/01-introduction/]`
+**Chapter Path:** `src`
 
 **Final PR:** `#[PR number]`
 
