@@ -311,6 +311,13 @@ fn main() {
 }
 ```
 
+**Expected Output**
+
+```text
+Final value = 3
+Total owners (strong_count) = 3
+```
+
 **Explanation**
 
 - Rc<RefCell<Counter>> คือการรวมร่างสองตัว: Rc จัดการเรื่อง "แชร์เจ้าของ", RefCell จัดการเรื่อง "แก้ไขค่าได้แม้ตัวแปรจะดู immutable"
