@@ -278,58 +278,7 @@ Boxed number = 42
 
 ---
 
-### Example 2 — `Rc<T>`
-
-**Purpose:** `เพื่อสาธิตปัญหาของ Ownership ปกติที่ยอมให้มีเจ้าของได้เพียง คนเดียว และแสดงวิธีใช้ Rc<T> (Reference Counted) เพื่อเปิดให้ข้อมูลบน Heap สามารถมีเจ้าของได้ หลายคนพร้อมกัน (Multiple Ownership) สำหรับสถานการณ์ที่อ่านข้อมูลอย่างเดียว (Read-only)`
-
-```rust
-use std::rc::Rc;
-
-#[derive(Debug)]
-struct Owner {
-    name: String,
-}
-
-fn main() {
-    let owner = Rc::new(Owner {
-        name: String::from("Shared Resource"),
-    });
-
-    println!("Reference count after creation = {}", Rc::strong_count(&owner));
-
-    let owner_clone1 = Rc::clone(&owner);
-    println!("Reference count after clone1 = {}", Rc::strong_count(&owner));
-
-    {
-        let owner_clone2 = Rc::clone(&owner);
-        println!("Reference count after clone2 = {}", Rc::strong_count(&owner));
-        println!("owner_clone2 points to: {:?}", owner_clone2);
-    }
-
-    println!("Reference count after clone2 dropped = {}", Rc::strong_count(&owner));
-    println!("owner = {:?}, owner_clone1 = {:?}", owner, owner_clone1);
-}
-```
-
-**Expected Output**
-
-```text
-Reference count after creation = 1
-Reference count after clone1 = 2
-Reference count after clone2 = 3
-owner_clone2 points to: Owner { name: "Shared Resource" }
-Reference count after clone2 dropped = 2
-owner = Owner { name: "Shared Resource" }, owner_clone1 = Owner { name: "Shared Resource" }
-```
-
-**Explanation**
-
-- Rc::new(...) สร้างข้อมูลบน heap พร้อม counter เริ่มต้นที่ 1
-- Rc::clone(&owner) ไม่ได้ copy ข้อมูลจริง แค่เพิ่มตัวเลขนับ (strong count) — นี่คือจุดต่างสำคัญจาก .clone() ของ type ทั่วไป
-- เมื่อ owner_clone2 หลุด scope (ปิด {}) ตัวนับลดลงอัตโนมัติ เพราะ Rc implement Drop ไว้ให้แล้ว
-- ข้อมูลจริงจะถูกลบก็ต่อเมื่อ ตัวนับกลับมาเป็น 0 เท่านั้น (คือเมื่อ owner ทุกตัวหมด scope)
-
-### Example 3 — `Rc<RefCell<T>>`
+### Example 2 — `Rc<RefCell<T>>`
 
 **Purpose:** `เพื่อสาธิตการก้าวข้ามกฎ Borrow Checker ที่ปกติห้ามแก้ไขข้อมูลหากใช้ Immutable Reference โดยใช้ Interior Mutability Pattern ผ่าน RefCell<T> ซึ่งจะย้ายการตรวจกฎ Borrowing Rules จากช่วง Compile time ไปตรวจช่วง Runtime แทน`
 
